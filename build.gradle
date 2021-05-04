@@ -38,18 +38,18 @@ tasks.register("processClasses") {
     ClassLoader classloader = new URLClassLoader([file.toURI().toURL()] as URL[])
 
     // Iterate through all of the class files in the specified package
-    String packageToScan = packageToProcess.toString().replace(".","/")
+    String packageToScan = packageToProcess.toString().replace(".",File.separator)
     java.nio.file.Path path = project.file("build/classes/kotlin/main/").toPath().resolve(packageToScan)
     List<Class> classesFromSpecificPackage = Files.walk(path)
         .filter({ Files.isRegularFile(it)})
         .map({
           return project.file("build/classes/kotlin/main/").toPath().relativize(it)
         })
-        .map({ it.toString().substring(0, it.toString().lastIndexOf(".")).replace("/", ".") })
+        .map({ it.toString().substring(0, it.toString().lastIndexOf(".")).replace(File.separator, ".") })
         .map({
           // Load all classes
           try {
-            // println(it)  // print class if necessary before loading it
+            println("Class = " + it)  // print class if necessary before loading it
             return classloader.loadClass(it)
           } catch (Throwable e) {
             println("Class could not be loaded:" + e.toString())
